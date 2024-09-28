@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictation Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        button, input {
+            padding: 10px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Audio Dictation Practice</h1>
+
+    <!-- Phần tử input cho phép tải lên tệp -->
+    <input type="file" id="file-input" accept="audio/*">
+
+    <!-- Phần tử audio để phát lại tệp -->
+    <audio id="audio" controls>
+        <source id="audio-source" src="">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Các nút điều khiển phát lại -->
+    <div class="controls">
+        <button onclick="audio.play()">Play</button>
+        <button onclick="audio.pause()">Pause</button>
+        <button onclick="audio.playbackRate = 0.5">0.5x Speed</button>
+        <button onclick="audio.playbackRate = 1">1x Speed</button>
+        <button onclick="audio.playbackRate = 1.5">1.5x Speed</button>
+    </div>
+
+    <!-- Tùy chọn để chỉnh tốc độ tua -->
+    <div class="controls">
+        <label for="seek-speed">Seek Speed (seconds):</label>
+        <input type="number" id="seek-speed" value="5" min="1">
+    </div>
+
+    <script>
+        const audio = document.getElementById('audio');
+        const audioSource = document.getElementById('audio-source');
+        const fileInput = document.getElementById('file-input');
+        const seekSpeedInput = document.getElementById('seek-speed'); // Lấy giá trị từ input để chỉnh tốc độ tua
+
+        // Khi người dùng chọn tệp, chúng ta sẽ thay đổi nguồn của audio
+        fileInput.addEventListener('change', function() {
+            const files = this.files;
+            if (files.length > 0) {
+                const fileURL = URL.createObjectURL(files[0]);
+                audioSource.src = fileURL;
+                audio.load();  // Tải lại audio để phát
+            }
+        });
+
+        // Hàm để tua theo số giây được chỉ định
+        function skip(seconds) {
+            audio.currentTime += seconds;
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                if (audio.paused) {
+                    audio.play();
+                } else {
+                    audio.pause();
+                }
+            }
+        });
+
+        // Lắng nghe sự kiện nhấn phím mũi tên trái và phải
+        document.addEventListener('keydown', function(event) {
+            const seekSpeed = parseInt(seekSpeedInput.value); // Lấy giá trị tốc độ tua từ input
+
+            if (event.code === 'KeyA') {
+                skip(-seekSpeed); // Tua ngược
+            } else if (event.code === 'KeyD') {
+                skip(seekSpeed);  // Tua tiến
+            }
+        });
+        document.addEventListener('keydown', function(event) {
+            const seekSpeed = parseInt(seekSpeedInput.value); // Lấy giá trị tốc độ tua từ input
+
+            if (event.code === 'ArrowLeft') {
+                skip(-seekSpeed); // Tua ngược
+            } else if (event.code === 'ArrowRight') {
+                skip(seekSpeed);  // Tua tiến
+            }
+            
+        });
+    </script>
+</body>
+</html>
